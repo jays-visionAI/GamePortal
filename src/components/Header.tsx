@@ -1,10 +1,10 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
-import { Gamepad2, LogIn, LogOut, Trophy } from 'lucide-react';
+import { Gamepad2, LogIn, LogOut, Trophy, AlertCircle } from 'lucide-react';
 
 const Header: React.FC = () => {
-    const { user, signInWithGoogle, logout } = useAuth();
+    const { user, signInWithGoogle, logout, error } = useAuth();
 
     return (
         <header className="bg-slate-900 border-b-4 border-indigo-500 p-4 text-white sticky top-0 z-50 shadow-lg shadow-indigo-500/20">
@@ -62,6 +62,16 @@ const Header: React.FC = () => {
                     )}
                 </nav>
             </div>
+
+            {/* Error Message */}
+            {error && (
+                <div className="container mx-auto mt-2">
+                    <div className="bg-red-900/50 border border-red-500 text-red-200 px-4 py-2 rounded flex items-center gap-2">
+                        <AlertCircle size={18} />
+                        <span className="text-sm">{error}</span>
+                    </div>
+                </div>
+            )}
         </header>
     );
 };
