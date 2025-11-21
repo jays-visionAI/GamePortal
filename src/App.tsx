@@ -5,6 +5,7 @@ import Header from './components/Header';
 import HomePage from './pages/HomePage';
 import GameDetailPage from './pages/GameDetailPage';
 import LeaderboardPage from './pages/LeaderboardPage';
+import ExerionGame from './games/ExerionGame';
 
 const App: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/game/:id" element={<GameDetailPage />} />
+              <Route path="/game/exerion" element={<ExerionGame />} />
               <Route path="/leaderboard" element={<LeaderboardPage />} />
             </Routes>
           </main>

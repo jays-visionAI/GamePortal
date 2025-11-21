@@ -17,8 +17,8 @@ interface ScoreEntry {
 }
 
 const GAMES = [
-    { id: 'sokoban', name: 'Sokoban', scoreLabel: 'Time' }
-    // Add more games here as they are implemented
+    { id: 'sokoban', name: 'Sokoban', scoreLabel: 'Time' },
+    { id: 'exerion', name: 'Exerion', scoreLabel: 'Score' }
 ];
 
 const LeaderboardPage: React.FC = () => {
@@ -38,8 +38,8 @@ const LeaderboardPage: React.FC = () => {
                     where('gameId', '==', selectedGame)
                 );
 
-                // Add level filter for Sokoban
-                if (selectedGame === 'sokoban') {
+                // Add level filter for Sokoban and Exerion
+                if (selectedGame === 'sokoban' || selectedGame === 'exerion') {
                     q = query(
                         scoresRef,
                         where('gameId', '==', selectedGame),
@@ -66,7 +66,14 @@ const LeaderboardPage: React.FC = () => {
                 });
 
                 // Client-side sort and limit
-                fetchedScores.sort((a, b) => a.score - b.score);
+                // Sokoban: Lower score (time) is better
+                // Exerion: Higher score is better
+                if (selectedGame === 'sokoban') {
+                    fetchedScores.sort((a, b) => a.score - b.score);
+                } else {
+                    fetchedScores.sort((a, b) => b.score - a.score);
+                }
+
                 setScores(fetchedScores.slice(0, 20));
             } catch (error) {
                 console.error('Error fetching leaderboard:', error);
@@ -129,7 +136,10 @@ const LeaderboardPage: React.FC = () => {
                     {GAMES.map((game) => (
                         <button
                             key={game.id}
-                            onClick={() => setSelectedGame(game.id)}
+                            onClick={() => {
+                                setSelectedGame(game.id);
+                                setSelectedLevel(1); // Reset level when game changes
+                            }}
                             className={`px-6 py-3 rounded-lg font-bold transition-all border-b-4 ${selectedGame === game.id
                                 ? 'bg-indigo-600 text-white border-indigo-800 scale-105'
                                 : 'bg-slate-700 text-slate-300 border-slate-900 hover:bg-slate-600'
@@ -140,21 +150,37 @@ const LeaderboardPage: React.FC = () => {
                     ))}
                 </div>
 
-                {/* Level Selector (Only for Sokoban) */}
-                {selectedGame === 'sokoban' && (
+                {/* Level Selector */}
+                {(selectedGame === 'sokoban' || selectedGame === 'exerion') && (
                     <div className="flex justify-center gap-2 mb-8 flex-wrap max-w-3xl mx-auto">
-                        {levels.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setSelectedLevel(index + 1)}
-                                className={`w-10 h-10 rounded-lg font-bold transition-all border-b-4 flex items-center justify-center ${selectedLevel === index + 1
-                                    ? 'bg-yellow-500 text-black border-yellow-700 scale-110'
-                                    : 'bg-slate-800 text-slate-400 border-slate-950 hover:bg-slate-700'
-                                    }`}
-                            >
-                                {index + 1}
-                            </button>
-                        ))}
+                        {selectedGame === 'sokoban' ? (
+                            levels.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => setSelectedLevel(index + 1)}
+                                    className={`w-10 h-10 rounded-lg font-bold transition-all border-b-4 flex items-center justify-center ${selectedLevel === index + 1
+                                        ? 'bg-yellow-500 text-black border-yellow-700 scale-110'
+                                        : 'bg-slate-800 text-slate-400 border-slate-950 hover:bg-slate-700'
+                                        }`}
+                                >
+                                    {index + 1}
+                                </button>
+                            ))
+                        ) : (
+                            // Exerion has 30 levels
+                            Array.from({ length: 30 }, (_, i) => i + 1).map((level) => (
+                                <button
+                                    key={level}
+                                    onClick={() => setSelectedLevel(level)}
+                                    className={`w-10 h-10 rounded-lg font-bold transition-all border-b-4 flex items-center justify-center ${selectedLevel === level
+                                        ? 'bg-cyan-500 text-black border-cyan-700 scale-110'
+                                        : 'bg-slate-800 text-slate-400 border-slate-950 hover:bg-slate-700'
+                                        }`}
+                                >
+                                    {level}
+                                </button>
+                            ))
+                        )}
                     </div>
                 )}
 

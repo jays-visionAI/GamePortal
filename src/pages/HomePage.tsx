@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Gamepad, Trophy, Users, ArrowRight } from 'lucide-react';
+import { Gamepad, Trophy, Users, ArrowRight, Rocket } from 'lucide-react';
 
 const HomePage: React.FC = () => {
     return (
@@ -78,8 +78,40 @@ const HomePage: React.FC = () => {
                         </div>
                     </Link>
 
+                    {/* Game Card 2: Exerion */}
+                    <Link to="/game/exerion" className="group relative bg-slate-900 rounded-xl overflow-hidden border-2 border-slate-800 hover:border-cyan-500 transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-500/20">
+                        <div className="aspect-video bg-slate-800 relative overflow-hidden">
+                            <div className="absolute inset-0 bg-cyan-900/20 group-hover:bg-transparent transition-colors z-10"></div>
+                            <div className="w-full h-full bg-black flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                                {/* Placeholder Graphic for Exerion */}
+                                <div className="relative w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-[#09090b] to-black">
+                                    <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', backgroundSize: '40px 40px', transform: 'perspective(500px) rotateX(60deg) translateY(100px) scale(2)' }}></div>
+                                    <div className="absolute bottom-10 left-1/2 -translate-x-1/2">
+                                        <Rocket size={64} className="text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="absolute top-2 right-2 bg-black/70 backdrop-blur text-xs font-bold px-2 py-1 rounded text-cyan-400 border border-cyan-500/30 z-20">
+                                SHOOTER
+                            </div>
+                        </div>
+                        <div className="p-5">
+                            <h3 className="text-xl font-bold text-white mb-1 group-hover:text-cyan-400 transition-colors">EXERION</h3>
+                            <p className="text-slate-400 text-sm mb-4 line-clamp-2">Pseudo-3D space shooter. Master inertia and defeat the alien swarm.</p>
+                            <div className="flex items-center justify-between mt-auto">
+                                <div className="flex items-center gap-1 text-xs text-slate-500">
+                                    <Users size={14} />
+                                    <span>New!</span>
+                                </div>
+                                <span className="text-cyan-400 text-sm font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                    PLAY <ArrowRight size={14} />
+                                </span>
+                            </div>
+                        </div>
+                    </Link>
+
                     {/* Placeholder Cards */}
-                    {['Sky Shooter', 'Barrel Jumper', 'Xrion Style'].map((game, idx) => (
+                    {['Barrel Jumper', 'Xrion Style'].map((game, idx) => (
                         <div key={idx} className="group relative bg-slate-900 rounded-xl overflow-hidden border-2 border-slate-800 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-not-allowed">
                             <div className="aspect-video bg-slate-800 relative flex items-center justify-center">
                                 <span className="text-4xl font-black text-slate-700 rotate-12 border-4 border-slate-700 p-2 rounded-lg">COMING SOON</span>
