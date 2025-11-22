@@ -146,37 +146,75 @@ const SokobanGame: React.FC = () => {
     // Sound Effects
     const sfxContextRef = useRef<AudioContext | null>(null);
 
+    const initAudioContext = useCallback(() => {
+        if (!sfxContextRef.current) {
+            const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+            if (AudioContextClass) {
+                sfxContextRef.current = new AudioContextClass();
+            }
+        }
+
+        if (sfxContextRef.current && sfxContextRef.current.state === 'suspended') {
+            sfxContextRef.current.resume().catch(() => {
+                console.warn('Failed to resume AudioContext');
+            });
+        }
+
+        return sfxContextRef.current;
+    }, []);
+
     const playMoveSound = useCallback(() => {
         try {
-            if (!sfxContextRef.current) {
-                sfxContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-            }
+            const ctx = initAudioContext();
+            if (!ctx) return;
 
-            if (sfxContextRef.current.state === 'suspended') {
-                sfxContextRef.current.resume();
-            }
-
-            const ctx = sfxContextRef.current;
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
 
             // Sliding sound
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(200, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.1);
+            osc.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.1);
 
-            gain.gain.setValueAtTime(0.05, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.1);
 
             osc.connect(gain);
             gain.connect(ctx.destination);
 
-            osc.start();
+            osc.start(ctx.currentTime);
             osc.stop(ctx.currentTime + 0.1);
         } catch (e) {
-            // Ignore audio errors
+            console.warn('Sound playback failed:', e);
         }
-    }, []);
+    }, [initAudioContext]);
+
+    const playSuccessSound = useCallback(() => {
+        try {
+            const ctx = initAudioContext();
+            if (!ctx) return;
+
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            // Success chime
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523, ctx.currentTime); // C5
+            osc.frequency.setValueAtTime(659, ctx.currentTime + 0.1); // E5
+            osc.frequency.setValueAtTime(784, ctx.currentTime + 0.2); // G5
+
+            gain.gain.setValueAtTime(0.15, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.4);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.4);
+        } catch (e) {
+            console.warn('Sound playback failed:', e);
+        }
+    }, [initAudioContext]);
 
     // Controls
     const handleMove = useCallback((direction: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT') => {
@@ -188,11 +226,12 @@ const SokobanGame: React.FC = () => {
             playMoveSound();
             setGameState({ ...engine.getState() });
             if (engine.getState().levelComplete) {
+                playSuccessSound();
                 stopTimer();
                 handleLevelComplete();
             }
         }
-    }, [engine, isPlaying, gameState, stopTimer, handleLevelComplete, playMoveSound]);
+    }, [engine, isPlaying, gameState, stopTimer, handleLevelComplete, playMoveSound, playSuccessSound]);
 
     const handleReset = useCallback(() => {
         if (engine && isPlaying) {
